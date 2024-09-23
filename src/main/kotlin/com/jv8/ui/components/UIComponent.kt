@@ -1,4 +1,4 @@
-package ui
+package com.jv8.ui.components
 
 abstract class UIComponent(
     var x: Float,
@@ -9,6 +9,8 @@ abstract class UIComponent(
     var isVisible: Boolean = true
 
     abstract fun render()
+
+    abstract fun refreshLayout(screenWidth: Int, screenHeight: Int)
 
     open fun handleInput() {}
 

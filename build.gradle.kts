@@ -22,6 +22,8 @@ val lwjglVersion = "3.3.4"
 val lwjglNatives = "natives-windows"
 
 dependencies {
+    implementation("org.json:json:20231013")
+
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
     implementation("org.lwjgl", "lwjgl")
