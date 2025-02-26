@@ -14,7 +14,7 @@ class UILabel(
     override fun render() {
         if (!isVisible) return
 
-        glColor3f(1.0f, 1.0f, 1.0f)
+        glColor3f(1.0F, 1.0F, 1.0F)
 
         if (fontRenderer == null) {
             fontRenderer = FontRenderer()

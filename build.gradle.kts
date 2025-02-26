@@ -1,8 +1,19 @@
 plugins {
     kotlin("jvm") version "2.0.10"
+    application
 }
 
-group = "org.example"
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(22))
+    }
+}
+
+application {
+    mainClass.set("com.jv8.MainKt")
+}
+
+group = "com.jv8"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -18,10 +29,23 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "com.jv8.MainKt"
+    }
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 val lwjglVersion = "3.3.4"
 val lwjglNatives = "natives-windows"
 
 dependencies {
+    implementation("net.java.dev.jna:jna:5.10.0")
+    implementation("net.java.dev.jna:jna-platform:5.10.0")
+
+    implementation("io.github.vyfor:kpresence:0.6.2")
+
     implementation("org.json:json:20231013")
 
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))

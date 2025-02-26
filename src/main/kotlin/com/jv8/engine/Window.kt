@@ -1,8 +1,6 @@
 package com.jv8.engine
 
-import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFW.*
-import org.lwjgl.glfw.GLFWVidMode
 import org.lwjgl.opengl.GL11
 import org.lwjgl.system.MemoryUtil
 

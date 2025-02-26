@@ -14,15 +14,16 @@ class UIButton(
 
     override fun render() {
         if (!isVisible) return
+        
+        glColor3f(1.0f, 1.0f, 1.0f)
 
         glBegin(GL_QUADS)
-        glVertex2f(x, y)  // Bottom-left corner
-        glVertex2f(x + width, y)  // Bottom-right corner
-        glVertex2f(x + width, y + height)  // Top-right corner
-        glVertex2f(x, y + height)  // Top-left corner
+        glVertex2f(x, y)
+        glVertex2f(x + width, y)
+        glVertex2f(x + width, y + height)
+        glVertex2f(x, y + height)
         glEnd()
 
-        glColor3f(1.0f, 1.0f, 1.0f)
     }
 
     override fun refreshLayout(screenWidth: Int, screenHeight: Int) {
@@ -33,7 +34,7 @@ class UIButton(
         val mouseX = MouseUtils.getMouseX()
         val mouseY = MouseUtils.getMouseY()
 
-        if (containsPoint(mouseX, mouseY) && MouseUtils.isMouseButtonPressed(0)) {
+        if (MouseUtils.isMouseButtonPressed(0) && containsPoint(mouseX, mouseY)) {
             onClick()
         }
     }

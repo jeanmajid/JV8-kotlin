@@ -1,10 +1,9 @@
 package com.jv8.engine
 
-import com.jv8.constants.FontPaths
-import com.jv8.renderers.FontRenderer
-import com.jv8.ui.components.UIButton
-import com.jv8.ui.components.UILabel
+import com.jv8.audio.SoundPlayer
 import com.jv8.ui.components.UIComponent
+import com.jv8.ui.components.UILabel
+import com.jv8.ui.UIParser
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
@@ -14,6 +13,11 @@ class GameEngine {
     private var isRunning = true
     private lateinit var window: Window
     private val uiComponents = mutableListOf<UIComponent>()
+
+    private var lastTime = System.currentTimeMillis()
+    private var frames = 0
+    private var fps = 0
+    private var fpsCounter = UILabel(10f, 40f, "FPS: 0", "fonts/roboto.json")
 
     companion object {
         var WINDOW_SIZE = Pair(800, 600)
@@ -43,14 +47,12 @@ class GameEngine {
         glfwSwapInterval(1)
         glfwShowWindow(window.windowHandle)
 
-        // Center window
         val vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor())!!
         glfwSetWindowPos(
-            window.windowHandle,
-            (vidMode.width() - WINDOW_SIZE.first) / 2,
-            (vidMode.height() - WINDOW_SIZE.second) / 2
+                window.windowHandle,
+                (vidMode.width() - WINDOW_SIZE.first) / 2,
+                (vidMode.height() - WINDOW_SIZE.second) / 2
         )
-
 
         glfwSetWindowSizeCallback(WindowContext.windowHandle) { _, newWidth, newHeight ->
             glViewport(0, 0, newWidth, newHeight)
@@ -64,15 +66,18 @@ class GameEngine {
             updateUIComponents(newWidth, newHeight)
         }
 
-        // UI components
-        val button = UIButton(100f, 100f, 200f, 50f, "Start") {
-            println("Button clicked!")
+        val components = UIParser.loadUI("ui/creationMenu.json")
+        for (component in components) {
+            uiComponents.add(component)
         }
-        val label = UILabel(150f, 200f, "Hello, World!", FontPaths.ROBOTO.path)
-        val label2 = UILabel(350f, 500f, "Hello, World!", FontPaths.ROBOTO.path)
-        uiComponents.add(button)
-        uiComponents.add(label)
-        uiComponents.add(label2)
+
+        uiComponents.add(fpsCounter)
+
+        // val soundPlayer = SoundPlayer()
+
+        // soundPlayer.init()
+        // soundPlayer.load("sounds/funko.wav")
+        // soundPlayer.play()
     }
 
     private fun loop() {
@@ -80,7 +85,7 @@ class GameEngine {
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        glOrtho(0.0, GameEngine.WINDOW_SIZE.first.toDouble(), GameEngine.WINDOW_SIZE.second.toDouble(), 0.0, -1.0, 1.0)
+        glOrtho(0.0, WINDOW_SIZE.first.toDouble(), WINDOW_SIZE.second.toDouble(), 0.0, -1.0, 1.0)
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
@@ -89,6 +94,15 @@ class GameEngine {
 
             uiComponents.forEach { it.handleInput() }
             uiComponents.forEach { it.render() }
+
+            frames++
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastTime >= 1000) {
+                fps = frames
+                frames = 0
+                lastTime = currentTime
+                fpsCounter.text = "FPS: $fps"
+            }
 
             window.pollEvents()
             window.swapBuffers()
@@ -101,8 +115,6 @@ class GameEngine {
     }
 
     private fun updateUIComponents(newWidth: Int, newHeight: Int) {
-        uiComponents.forEach { component ->
-            component.refreshLayout(newWidth, newHeight);
-        }
+        uiComponents.forEach { component -> component.refreshLayout(newWidth, newHeight) }
     }
 }
