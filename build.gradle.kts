@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.0.10"
     application
+    id("edu.sc.seis.launch4j") version "3.0.5"
 }
 
 java {
@@ -37,18 +38,31 @@ tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+
+launch4j {
+    mainClassName = "com.jv8.MainKt"
+    icon = "${projectDir}/icon.ico"
+    outfile = "JV8.exe"
+    jreMinVersion = "22"
+    windowTitle = "JV8"
+    // manifest {
+    //     copyright = "Your Copyright"
+    // }
+}
+
 val lwjglVersion = "3.3.4"
 val lwjglNatives = "natives-windows"
 
 dependencies {
     implementation("net.java.dev.jna:jna:5.10.0")
     implementation("net.java.dev.jna:jna-platform:5.10.0")
-
     implementation("io.github.vyfor:kpresence:0.6.2")
-
     implementation("org.json:json:20231013")
+    implementation("org.joml:joml:1.10.8")
 
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
+
+    
 
     implementation("org.lwjgl", "lwjgl")
     implementation("org.lwjgl", "lwjgl-assimp")

@@ -22,8 +22,7 @@ class UIButton(
         glVertex2f(x + width, y)
         glVertex2f(x + width, y + height)
         glVertex2f(x, y + height)
-        glEnd()
-
+        glEnd() 
     }
 
     override fun refreshLayout(screenWidth: Int, screenHeight: Int) {
