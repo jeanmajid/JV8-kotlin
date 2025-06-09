@@ -22,6 +22,7 @@ class Cube {
              0.5f,  0.5f, -0.5f,
             -0.5f,  0.5f, -0.5f
         )
+
         // Define indices for drawing cube with triangles
         val indices = intArrayOf(
             0, 1, 2, 2, 3, 0,       // front
