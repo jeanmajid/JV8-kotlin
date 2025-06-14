@@ -37,7 +37,7 @@ class ObjModel(filePath: String, loadMaterials: Boolean = false) {
         glBindVertexArray(model.vaoId)
         glEnableVertexAttribArray(0) // Position
         glEnableVertexAttribArray(1) // Normal
-        glEnableVertexAttribArray(2) // TexCoord
+        // glEnableVertexAttribArray(2) // TexCoord
 
         // Draw the model
         if (model.groups.isEmpty()) {
@@ -179,7 +179,7 @@ class ObjModel(filePath: String, loadMaterials: Boolean = false) {
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, 0)
 
-        glDisableVertexAttribArray(2)
+        // glDisableVertexAttribArray(2)
         glDisableVertexAttribArray(1)
         glDisableVertexAttribArray(0)
         glBindVertexArray(0)

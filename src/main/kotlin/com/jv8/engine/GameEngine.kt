@@ -54,6 +54,12 @@ class GameEngine {
 
         WindowContext.windowHandle = window
 
+        glfwMakeContextCurrent(window)
+        glfwSwapInterval(1)
+        glfwShowWindow(window)
+        GL.createCapabilities()
+        glEnable(GL_DEPTH_TEST)
+
         glfwSetWindowSizeCallback(window) { _, newWidth, newHeight ->
             WINDOW_SIZE = Pair(newWidth, newHeight)
             glViewport(0, 0, newWidth, newHeight)
@@ -69,12 +75,6 @@ class GameEngine {
 
             updateUIComponents(newWidth, newHeight)
         }
-
-        glfwMakeContextCurrent(window)
-        glfwSwapInterval(1)
-        glfwShowWindow(window)
-        GL.createCapabilities()
-        glEnable(GL_DEPTH_TEST)
 
         uiShader = Shader("shaders/ui_vertex.glsl", "shaders/ui_fragment.glsl")
 
@@ -94,7 +94,7 @@ class GameEngine {
         shader.setUniform("hasSpecularMap", false)
         shader.unbind()
 
-        testModel = ObjModel("models/human.obj", false)
+        testModel = ObjModel("models/bugatti.obj", true)
 
         camera = Camera(position = Vector3f(0f, 3f, 10f), target = Vector3f(0f, 0f, 0f))
         projection =
@@ -127,10 +127,13 @@ class GameEngine {
             glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
             shader.bind()
+
             glEnable(GL_DEPTH_TEST)
 
             shader.setUniform("projection", projection)
+
             shader.setUniform("view", camera.viewMatrix)
+
             shader.setUniform("model", Matrix4f().identity())
 
             shader.setUniform("lightPos", Vector3f(5.0f, 5.0f, 5.0f))
@@ -139,7 +142,8 @@ class GameEngine {
 
             texture.bind(0)
 
-            testModel.render()
+            testModel.render(shader)
+
             shader.unbind()
 
             uiShader.bind()

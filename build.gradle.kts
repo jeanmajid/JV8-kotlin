@@ -21,11 +21,6 @@ repositories {
     mavenCentral()
 }
 
-
-dependencies {
-    testImplementation(kotlin("test"))
-}
-
 tasks.test {
     useJUnitPlatform()
 }
@@ -54,6 +49,8 @@ val lwjglVersion = "3.3.4"
 val lwjglNatives = "natives-windows"
 
 dependencies {
+    testImplementation(kotlin("test"))
+
     implementation("net.java.dev.jna:jna:5.10.0")
     implementation("net.java.dev.jna:jna-platform:5.10.0")
     implementation("io.github.vyfor:kpresence:0.6.2")
