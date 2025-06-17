@@ -23,12 +23,13 @@ class GameEngine {
     private var frames = 0
     private var fps = 0
     private var fpsCounter = UILabel(10f, 40f, "FPS: 0", "fonts/roboto.json")
+    private var renderDistance = 10000f
 
     companion object {
         var WINDOW_SIZE = Pair(800, 600)
     }
-
     private lateinit var shader: Shader
+    private lateinit var defaultShader: Shader
     private lateinit var uiShader: Shader
     private lateinit var texture: Texture
     private lateinit var testModel: ObjModel
@@ -53,12 +54,21 @@ class GameEngine {
         if (window == 0L) throw RuntimeException("Failed to create GLFW window")
 
         WindowContext.windowHandle = window
-
         glfwMakeContextCurrent(window)
         glfwSwapInterval(1)
         glfwShowWindow(window)
         GL.createCapabilities()
         glEnable(GL_DEPTH_TEST)
+
+        // // Set clear color to light blue/gray so transparency is visible
+        // glClearColor(0.3f, 0.5f, 0.8f, 1.0f)
+
+        // Disable back-face culling for transparency
+        glDisable(GL_CULL_FACE)
+
+        // Enable blending for transparency
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         glfwSetWindowSizeCallback(window) { _, newWidth, newHeight ->
             WINDOW_SIZE = Pair(newWidth, newHeight)
@@ -70,7 +80,7 @@ class GameEngine {
                                     Math.toRadians(60.0).toFloat(),
                                     newWidth.toFloat() / newHeight,
                                     0.1f,
-                                    100f
+                                    renderDistance
                             )
 
             updateUIComponents(newWidth, newHeight)
@@ -80,30 +90,22 @@ class GameEngine {
 
         texture = Texture("textures/ravine-cliff_normal-ogl.png")
 
-        fpsCounter.setShader(uiShader)
-
+        fpsCounter.setShader(uiShader) // Create both shader versions
         shader = Shader("shaders/vertex.glsl", "shaders/fragment.glsl")
-        shader.bind()
-        shader.setUniform("ambientColor", Vector3f(0.2f, 0.2f, 0.2f))
-        shader.setUniform("diffuseColor", Vector3f(0.8f, 0.8f, 0.8f))
-        shader.setUniform("specularColor", Vector3f(1.0f, 1.0f, 1.0f))
-        shader.setUniform("shininess", 32.0f)
-        shader.setUniform("hasDiffuseMap", true)
-        shader.setUniform("diffuseMap", 0)
-        shader.setUniform("hasNormalMap", false)
-        shader.setUniform("hasSpecularMap", false)
-        shader.unbind()
+        defaultShader = Shader("shaders/default_vertex.glsl", "shaders/default_fragment.glsl")
 
-        testModel = ObjModel("models/bugatti.obj", true)
+        testModel = ObjModel.load("models/bugatti.obj")
 
-        camera = Camera(position = Vector3f(0f, 3f, 10f), target = Vector3f(0f, 0f, 0f))
+        // Position camera further back to see the whole model
+        camera = Camera(position = Vector3f(0f, 0f, 5f), target = Vector3f(0f, 0f, 0f))
+
         projection =
                 Matrix4f()
                         .perspective(
                                 Math.toRadians(60.0).toFloat(),
                                 width.toFloat() / height,
                                 0.1f,
-                                100f
+                                renderDistance
                         )
 
         uiComponents.add(fpsCounter)
@@ -124,27 +126,43 @@ class GameEngine {
             glfwPollEvents()
 
             camera.update(window)
+
             glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-            shader.bind()
+            // Choose the appropriate shader based on whether model has materials
+            val activeShader = if (testModel.hasMaterials) shader else defaultShader
+            activeShader.bind()
 
             glEnable(GL_DEPTH_TEST)
+            glEnable(GL_BLEND)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-            shader.setUniform("projection", projection)
+            activeShader.setUniform("projection", projection)
+            activeShader.setUniform("view", camera.viewMatrix)
+            activeShader.setUniform("model", Matrix4f().identity()) // Set lighting uniforms
+            if (testModel.hasMaterials) {
+                // Use the complex lighting system for models with materials
+                activeShader.setUniform("lights[0].position", Vector3f(0.5f, 1.0f, 0.8f))
+                activeShader.setUniform("lights[0].color", Vector3f(1.0f, 1.0f, 1.0f))
+                activeShader.setUniform("lights[0].intensity", 2.0f)
+                activeShader.setUniform("numLights", 1)
+                activeShader.setUniform("viewPos", camera.position)
+                testModel.render(activeShader)
+            } else {
+                // Use enhanced lighting for models without materials
+                activeShader.setUniform(
+                        "lightPos",
+                        Vector3f(2.0f, 3.0f, 4.0f)
+                ) // Position light for better angle
+                activeShader.setUniform(
+                        "lightColor",
+                        Vector3f(1.2f, 1.1f, 1.0f)
+                )
+                activeShader.setUniform("viewPos", camera.position)
+                testModel.renderWithDefaultMaterial(activeShader)
+            }
 
-            shader.setUniform("view", camera.viewMatrix)
-
-            shader.setUniform("model", Matrix4f().identity())
-
-            shader.setUniform("lightPos", Vector3f(5.0f, 5.0f, 5.0f))
-            shader.setUniform("lightColor", Vector3f(1.0f, 1.0f, 1.0f))
-            shader.setUniform("viewPos", camera.position)
-
-            texture.bind(0)
-
-            testModel.render(shader)
-
-            shader.unbind()
+            activeShader.unbind()
 
             uiShader.bind()
             glDisable(GL_DEPTH_TEST)
@@ -168,9 +186,9 @@ class GameEngine {
             glfwSwapBuffers(window)
         }
     }
-
     private fun cleanup() {
         shader.cleanup()
+        defaultShader.cleanup()
         uiShader.cleanup()
         testModel.cleanup()
         texture.cleanup()

@@ -32,7 +32,7 @@ class Camera(
     }
 
     fun update(window: Long) {
-        val moveSpeed = 0.05f
+        val moveSpeed = 0.5f
         
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             cursorLocked = false
