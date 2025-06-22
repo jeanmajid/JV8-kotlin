@@ -37,7 +37,6 @@ class FontRenderer {
         glVertexAttribPointer(0, 2, GL_FLOAT, false, 4 * Float.SIZE_BYTES, 0L)
         glEnableVertexAttribArray(0)
         
-        // Fix: use a long value for the offset
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 4 * Float.SIZE_BYTES, 2L * Float.SIZE_BYTES)
         glEnableVertexAttribArray(1)
         

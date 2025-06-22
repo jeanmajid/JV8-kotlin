@@ -1,9 +1,9 @@
 package com.jv8.TD.geometry
 
-import org.lwjgl.opengl.GL30.*
-import org.lwjgl.system.MemoryUtil
 import kotlin.math.cos
 import kotlin.math.sin
+import org.lwjgl.opengl.GL30.*
+import org.lwjgl.system.MemoryUtil
 
 class Circle2D {
     private val vaoId: Int
@@ -46,9 +46,8 @@ class Circle2D {
         // Vertex buffer object
         val vboId = glGenBuffers()
         glBindBuffer(GL_ARRAY_BUFFER, vboId)
-        val vertexBuffer = MemoryUtil.memAllocFloat(vertices.size)
-            .put(vertices)
-            .flip() as java.nio.FloatBuffer
+        val vertexBuffer =
+                MemoryUtil.memAllocFloat(vertices.size).put(vertices).flip() as java.nio.FloatBuffer
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW)
         // Position attribute pointer layout(location = 0, size = 3)
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * 4, 0)
@@ -58,9 +57,8 @@ class Circle2D {
         // Element buffer object
         val eboId = glGenBuffers()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboId)
-        val indexBuffer = MemoryUtil.memAllocInt(indices.size)
-            .put(indices)
-            .flip() as java.nio.IntBuffer
+        val indexBuffer =
+                MemoryUtil.memAllocInt(indices.size).put(indices).flip() as java.nio.IntBuffer
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW)
         MemoryUtil.memFree(indexBuffer)
 

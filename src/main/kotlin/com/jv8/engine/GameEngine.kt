@@ -90,13 +90,12 @@ class GameEngine {
 
         texture = Texture("textures/ravine-cliff_normal-ogl.png")
 
-        fpsCounter.setShader(uiShader) // Create both shader versions
+        fpsCounter.setShader(uiShader)
         shader = Shader("shaders/vertex.glsl", "shaders/fragment.glsl")
         defaultShader = Shader("shaders/default_vertex.glsl", "shaders/default_fragment.glsl")
 
         testModel = ObjModel.load("models/bugatti.obj")
 
-        // Position camera further back to see the whole model
         camera = Camera(position = Vector3f(0f, 0f, 5f), target = Vector3f(0f, 0f, 0f))
 
         projection =
@@ -139,7 +138,7 @@ class GameEngine {
 
             activeShader.setUniform("projection", projection)
             activeShader.setUniform("view", camera.viewMatrix)
-            activeShader.setUniform("model", Matrix4f().identity()) // Set lighting uniforms
+            activeShader.setUniform("model", Matrix4f().identity())
             if (testModel.hasMaterials) {
                 // Use the complex lighting system for models with materials
                 activeShader.setUniform("lights[0].position", Vector3f(0.5f, 1.0f, 0.8f))
@@ -153,7 +152,7 @@ class GameEngine {
                 activeShader.setUniform(
                         "lightPos",
                         Vector3f(2.0f, 3.0f, 4.0f)
-                ) // Position light for better angle
+                )
                 activeShader.setUniform(
                         "lightColor",
                         Vector3f(1.2f, 1.1f, 1.0f)

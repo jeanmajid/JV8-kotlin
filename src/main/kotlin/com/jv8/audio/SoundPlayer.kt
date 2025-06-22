@@ -94,7 +94,8 @@ class SoundPlayer {
         val format = audioInputStream.format
 
         // println(
-        //         "Audio Format: Channels=${format.channels}, SampleRate=${format.sampleRate}, SampleSizeInBits=${format.sampleSizeInBits}"
+        //         "Audio Format: Channels=${format.channels}, SampleRate=${format.sampleRate},
+        // SampleSizeInBits=${format.sampleSizeInBits}"
         // )
 
         val desiredFormat =
